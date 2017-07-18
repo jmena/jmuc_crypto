@@ -54,7 +54,7 @@ void jmuc_sha1_get_digest_bytes(jmuc_sha1_t *context, uint8_t digest[20]);
 
 
 jmuc_inline static uint32_t jmuc_sha1_left_rotate(uint32_t value, uint32_t count) {
-	return (value << count) ^ (value >> (32-count));
+    return (value << count) ^ (value >> (32-count));
 }
 
 jmuc_inline static void uint32t_to_bytes(uint32_t in, uint8_t *out) {
@@ -66,106 +66,106 @@ jmuc_inline static void uint32t_to_bytes(uint32_t in, uint8_t *out) {
 
 
 jmuc_inline static void jmuc_sha1_process_chunk(uint8_t block[64], uint32_t digest[5]) {
-	uint32_t w[80];
-	for (uint32_t i = 0; i < 16; i++) {
-		w[i]  = (block[i*4 + 0] << 24);
-		w[i] |= (block[i*4 + 1] << 16);
-		w[i] |= (block[i*4 + 2] << 8);
-		w[i] |= (block[i*4 + 3]);
-	}
-	for (uint32_t i = 16; i < 80; i++) {
-		w[i] = jmuc_sha1_left_rotate((w[i-3] ^ w[i-8] ^ w[i-14] ^ w[i-16]), 1);
-	}
+    uint32_t w[80];
+    for (uint32_t i = 0; i < 16; i++) {
+        w[i]  = (block[i*4 + 0] << 24);
+        w[i] |= (block[i*4 + 1] << 16);
+        w[i] |= (block[i*4 + 2] << 8);
+        w[i] |= (block[i*4 + 3]);
+    }
+    for (uint32_t i = 16; i < 80; i++) {
+        w[i] = jmuc_sha1_left_rotate((w[i-3] ^ w[i-8] ^ w[i-14] ^ w[i-16]), 1);
+    }
 
-	uint32_t a = digest[0];
-	uint32_t b = digest[1];
-	uint32_t c = digest[2];
-	uint32_t d = digest[3];
-	uint32_t e = digest[4];
+    uint32_t a = digest[0];
+    uint32_t b = digest[1];
+    uint32_t c = digest[2];
+    uint32_t d = digest[3];
+    uint32_t e = digest[4];
 
-	for (uint32_t i=0; i < 80; ++i) {
-		uint32_t f = 0;
-		uint32_t k = 0;
+    for (uint32_t i=0; i < 80; ++i) {
+        uint32_t f = 0;
+        uint32_t k = 0;
 
-		if (i < 20) {
-			f = (b & c) | (~b & d);
-			k = 0x5A827999;
-		} else if (i < 40) {
-			f = b ^ c ^ d;
-			k = 0x6ED9EBA1;
-		} else if (i < 60) {
-			f = (b & c) | (b & d) | (c & d);
-			k = 0x8F1BBCDC;
-		} else {
-			f = b ^ c ^ d;
-			k = 0xCA62C1D6;
-		}
-		uint32_t temp = jmuc_sha1_left_rotate(a, 5) + f + e + k + w[i];
-		e = d;
-		d = c;
-		c = jmuc_sha1_left_rotate(b, 30);
-		b = a;
-		a = temp;
-	}
+        if (i < 20) {
+            f = (b & c) | (~b & d);
+            k = 0x5A827999;
+        } else if (i < 40) {
+            f = b ^ c ^ d;
+            k = 0x6ED9EBA1;
+        } else if (i < 60) {
+            f = (b & c) | (b & d) | (c & d);
+            k = 0x8F1BBCDC;
+        } else {
+            f = b ^ c ^ d;
+            k = 0xCA62C1D6;
+        }
+        uint32_t temp = jmuc_sha1_left_rotate(a, 5) + f + e + k + w[i];
+        e = d;
+        d = c;
+        c = jmuc_sha1_left_rotate(b, 30);
+        b = a;
+        a = temp;
+    }
 
-	digest[0] += a;
-	digest[1] += b;
-	digest[2] += c;
-	digest[3] += d;
-	digest[4] += e;
+    digest[0] += a;
+    digest[1] += b;
+    digest[2] += c;
+    digest[3] += d;
+    digest[4] += e;
 }
 
 
 void jmuc_sha1_initialize(jmuc_sha1_t *context) {
-	context->digest[0] = 0x67452301;
-	context->digest[1] = 0xEFCDAB89;
-	context->digest[2] = 0x98BADCFE;
-	context->digest[3] = 0x10325476;
-	context->digest[4] = 0xC3D2E1F0;
-	context->chunk_idx = 0;
-	context->size = 0;
+    context->digest[0] = 0x67452301;
+    context->digest[1] = 0xEFCDAB89;
+    context->digest[2] = 0x98BADCFE;
+    context->digest[3] = 0x10325476;
+    context->digest[4] = 0xC3D2E1F0;
+    context->chunk_idx = 0;
+    context->size = 0;
 }
 
 void jmuc_sha1_feed_byte(jmuc_sha1_t *context, uint8_t octet) {
-	context->block[context->chunk_idx++] = octet;
-	++context->size;
-	if (context->chunk_idx == 64) {
-		context->chunk_idx = 0;
-		jmuc_sha1_process_chunk(context->block, context->digest);
-	}
+    context->block[context->chunk_idx++] = octet;
+    ++context->size;
+    if (context->chunk_idx == 64) {
+        context->chunk_idx = 0;
+        jmuc_sha1_process_chunk(context->block, context->digest);
+    }
 }
 
 void jmuc_sha1_feed_bytes(jmuc_sha1_t *context, const void *buffer, uint32_t len) {
-	const uint8_t *it = buffer;
-	while (len--) {
-		jmuc_sha1_feed_byte(context, *it);
-		it++;
-	}
+    const uint8_t *it = buffer;
+    while (len--) {
+        jmuc_sha1_feed_byte(context, *it);
+        it++;
+    }
 }
 
 void jmuc_sha1_finish(jmuc_sha1_t *context) {
     uint32_t size = context->size;
-	jmuc_sha1_feed_byte(context, 0x80);
+    jmuc_sha1_feed_byte(context, 0x80);
 
     // complete the chunk to 448 bits. We need space for 64 bits.
-	if (context->chunk_idx > 56) {
-		while (context->chunk_idx != 0) {
-			jmuc_sha1_feed_byte(context, 0);
-		}
+    if (context->chunk_idx > 56) {
+        while (context->chunk_idx != 0) {
+            jmuc_sha1_feed_byte(context, 0);
+        }
     }
-	while (context->chunk_idx < 56) {
-		jmuc_sha1_feed_byte(context, 0);
-	}
+    while (context->chunk_idx < 56) {
+        jmuc_sha1_feed_byte(context, 0);
+    }
 
     // only support 32 bits
-	jmuc_sha1_feed_byte(context, 0);
-	jmuc_sha1_feed_byte(context, 0);
-	jmuc_sha1_feed_byte(context, 0);
-	jmuc_sha1_feed_byte(context, 0);
-	jmuc_sha1_feed_byte(context, (size >> 21) & 0xFF);
-	jmuc_sha1_feed_byte(context, (size >> 13) & 0xFF);
-	jmuc_sha1_feed_byte(context, (size >>  5)  & 0xFF);
-	jmuc_sha1_feed_byte(context, (size <<  3)  & 0xFF);
+    jmuc_sha1_feed_byte(context, 0);
+    jmuc_sha1_feed_byte(context, 0);
+    jmuc_sha1_feed_byte(context, 0);
+    jmuc_sha1_feed_byte(context, 0);
+    jmuc_sha1_feed_byte(context, (size >> 21) & 0xFF);
+    jmuc_sha1_feed_byte(context, (size >> 13) & 0xFF);
+    jmuc_sha1_feed_byte(context, (size >>  5)  & 0xFF);
+    jmuc_sha1_feed_byte(context, (size <<  3)  & 0xFF);
 }
 
 void jmuc_sha1_get_digest_bytes(jmuc_sha1_t *context, uint8_t digest[20]) {
