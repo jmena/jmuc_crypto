@@ -15,14 +15,14 @@ extern "C" {
 #endif
 
 typedef struct {
-    uint8_t  block[64];
+    uint8_t block[64];
     uint32_t digest[5];
     uint32_t chunk_idx;
     uint32_t size;
 } jmuc_sha1_t;
 
 
-uint8_t* jmuc_sha1_compute(const void *buffer, uint32_t len, uint8_t digest[20]);
+uint8_t *jmuc_sha1_compute(const void *buffer, uint32_t len, uint8_t digest[20]);
 
 void jmuc_sha1_initialize(jmuc_sha1_t *context);
 void jmuc_sha1_feed_byte(jmuc_sha1_t *context, uint8_t octet);
@@ -43,13 +43,13 @@ void jmuc_sha1_get_digest_bytes(jmuc_sha1_t *context, uint8_t digest[20]);
 
 
 #ifndef _MSC_VER
-   #ifdef __cplusplus
-   #define jmuc_inline inline
-   #else
-   #define jmuc_inline
-   #endif
+#ifdef __cplusplus
+#define jmuc_inline inline
 #else
-   #define jmuc_inline __forceinline
+#define jmuc_inline
+#endif
+#else
+#define jmuc_inline __forceinline
 #endif
 
 
